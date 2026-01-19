@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+    environment {
+        TOMCAT_URL      = 'http://127.0.0.1:8081'
+        APP_NAME        = 'myapp'
+        WAR_FILE        = 'target/myapp.war'
+        TOMCAT_CREDS    = credentials('tomcat')
+    }
+
     tools {
         maven 'MAVEN_3'
         jdk 'JDK_21'
@@ -8,40 +15,59 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout Source Code') {
             steps {
                 git branch: 'master',
                     url: 'https://github.com/vaibhavwick3009/java11-examples.git'
             }
         }
 
-        stage('Build Maven Project') {
+        stage('Build Maven WAR') {
             steps {
-                sh 'mvn clean package'
+                sh '''
+                    mvn clean package
+                '''
+            }
+        }
+
+        stage('Verify WAR') {
+            steps {
+                sh '''
+                    if [ ! -f ${WAR_FILE} ]; then
+                      echo "WAR file not found!"
+                      exit 1
+                    fi
+                '''
+            }
+        }
+
+        stage('Undeploy Existing App (If Any)') {
+            steps {
+                sh '''
+                    curl -u ${TOMCAT_CREDS_USR}:${TOMCAT_CREDS_PSW} \
+                    "${TOMCAT_URL}/manager/text/undeploy?path=/${APP_NAME}" || true
+                '''
             }
         }
 
         stage('Deploy to Tomcat 11') {
             steps {
-                deploy adapters: [
-                    tomcat10(
-                        credentialsId: 'tomcat',
-                        path: '',
-                        url: 'http://http://127.0.0.1:8081'
-                    )
-                ],
-                contextPath: 'myapp',
-                war: '**/target/*.war'
+                sh '''
+                    curl -u ${TOMCAT_CREDS_USR}:${TOMCAT_CREDS_PSW} \
+                    -T ${WAR_FILE} \
+                    "${TOMCAT_URL}/manager/text/deploy?path=/${APP_NAME}&update=true"
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'Application deployed successfully to Tomcat!'
+            echo "✅ Application deployed successfully!"
+            echo "🌍 URL: ${TOMCAT_URL}/${APP_NAME}"
         }
         failure {
-            echo 'Deployment failed!'
+            echo "❌ Deployment failed. Check Jenkins logs."
         }
     }
 }
