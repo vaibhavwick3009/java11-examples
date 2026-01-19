@@ -1,20 +1,47 @@
 pipeline {
     agent any
+
+    tools {
+        maven 'MAVEN_3'
+        jdk 'JDK_21'
+    }
+
     stages {
-        stage ('checkout') {
+
+        stage('Checkout Code') {
             steps {
-            git 'https://github.com/amitopenwriteup/java11-examples.git'
+                git branch: 'master',
+                    url: 'https://github.com/vaibhavwick3009/java11-examples.git'
             }
         }
-        stage ('packaging') {
+
+        stage('Build Maven Project') {
             steps {
                 sh 'mvn clean package'
             }
         }
-        stage ('archving') {
+
+        stage('Deploy to Tomcat') {
             steps {
-                 archiveArtifacts 'target/*.jar'
+                deploy adapters: [
+                    tomcat11(
+                        credentialsId: 'tomcat',
+                        path: '',
+                        url: 'http://127.0.0.1:8081'
+                    )
+                ],
+                contextPath: 'myapp',
+                war: '**/target/*.war'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Application deployed successfully to Tomcat!'
+        }
+        failure {
+            echo 'Deployment failed!'
         }
     }
 }
