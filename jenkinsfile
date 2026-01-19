@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        TOMCAT_URL      = 'http://127.0.0.1:8081'
+        TOMCAT_URL      = 'http://localhost:8081'
         APP_NAME        = 'myapp'
         WAR_FILE        = 'target/myapp.war'
         TOMCAT_CREDS    = credentials('tomcat-creds')
