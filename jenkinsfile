@@ -21,13 +21,13 @@ pipeline {
             }
         }
 
-        stage('Deploy to Tomcat') {
+        stage('Deploy to Tomcat 11') {
             steps {
                 deploy adapters: [
-                    tomcat11(
+                    tomcat10(
                         credentialsId: 'tomcat',
                         path: '',
-                        url: 'http://http://localhost:8081'
+                        url: 'http://http://127.0.0.1:8081'
                     )
                 ],
                 contextPath: 'myapp',
