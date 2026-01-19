@@ -7,14 +7,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Project Coordinates -->
     <groupId>com.example</groupId>
     <artifactId>java11-examples</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
 
     <name>Java11 Examples Web App</name>
-    <description>Maven Web Application deployed via Jenkins to Tomcat 11</description>
 
     <!-- Java 21 -->
     <properties>
@@ -24,10 +22,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!-- Dependencies -->
     <dependencies>
 
-        <!-- Jakarta Servlet API (REQUIRED for Tomcat 11) -->
+        <!-- Jakarta Servlet API for Tomcat 11 -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -35,7 +32,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Optional: JSP Support -->
+        <!-- JSP Support -->
         <dependency>
             <groupId>jakarta.servlet.jsp</groupId>
             <artifactId>jakarta.servlet.jsp-api</artifactId>
@@ -43,22 +40,27 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Optional: JSTL -->
+        <!-- JSTL -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
             <version>3.0.0</version>
         </dependency>
 
+        <!-- ✅ Gson (FIXES YOUR ERROR) -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
     </dependencies>
 
-    <!-- Build Configuration -->
     <build>
         <finalName>myapp</finalName>
 
         <plugins>
 
-            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -68,7 +70,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven WAR Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
